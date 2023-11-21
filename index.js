@@ -12,10 +12,29 @@ const username = "sourcier";
 
 const app = new OAuthApp(config);
 
-async function main() {
+async function getRepos(app) {
   try {
     const res = await app.octokit.request(`/users/${username}/repos`);
-    console.log(res);
+
+    if (res.status !== 200) {
+      throw new Error("Could not fetch repos");
+    }
+
+    const repos = res.data.map((repo) => ({
+      id: repo.id,
+      name: repo.name,
+      url: repo.url,
+    }));
+
+    console.log(JSON.stringify(repos, null, 2));
+  } catch (error) {
+    console.log(error);
+  }
+}
+
+async function main() {
+  try {
+    getRepos(app);
   } catch (error) {
     console.log(error);
   }
